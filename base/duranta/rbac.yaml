@@ -1,0 +1,53 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: duranta-scc-anyuid
+  namespace: duranta
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid
+subjects:
+  - kind: ServiceAccount
+    name: oai-amf
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-ausf
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-nrf
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-smf
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-udm
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-udr
+    namespace: duranta
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: duranta-scc-privileged
+  namespace: duranta
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:privileged
+subjects:
+  - kind: ServiceAccount
+    name: oai-gnb
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-nr-ue
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-traffic-server
+    namespace: duranta
+  - kind: ServiceAccount
+    name: oai-upf
+    namespace: duranta
