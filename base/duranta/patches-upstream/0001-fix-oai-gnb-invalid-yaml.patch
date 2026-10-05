@@ -1,0 +1,25 @@
+diff --git a/oai-5g-ran/oai-gnb/templates/configmap.yaml b/oai-5g-ran/oai-gnb/templates/configmap.yaml
+--- a/oai-5g-ran/oai-gnb/templates/configmap.yaml
++++ b/oai-5g-ran/oai-gnb/templates/configmap.yaml
+@@ -8,6 +8,5 @@ metadata:
+     app: {{ .Release.Name }}
+     {{- include "oai-gnb.labels" . | nindent 4 }}
+ data:
+-  config.yaml: |-
+ {{ (.Files.Glob "config.yaml").AsConfig | nindent 2 }}
+
+diff --git a/oai-5g-ran/oai-gnb/templates/deployment.yaml b/oai-5g-ran/oai-gnb/templates/deployment.yaml
+--- a/oai-5g-ran/oai-gnb/templates/deployment.yaml
++++ b/oai-5g-ran/oai-gnb/templates/deployment.yaml
+@@ -239,11 +239,6 @@ spec:
+           {{- if not .Values.start.gnb }}
+           command: [ "/bin/sleep", "infinity" ]
+           {{- end }}
+-          env:
+-            - name: TZ
+-              value: {{ .Values.config.timeZone | quote }}
+-            - name: USE_ADDITIONAL_OPTIONS
+-              value: {{ .Values.config.useAdditionalOptions | quote }}
+         {{- if .Values.includeTcpDumpContainer }}
+         - name: tcpdump
+           image: "{{ .Values.tcpdumpimage.repository }}:{{ .Values.tcpdumpimage.version }}"

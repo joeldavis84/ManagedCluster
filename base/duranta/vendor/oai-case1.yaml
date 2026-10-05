@@ -544,7 +544,6 @@ metadata:
     app.kubernetes.io/version: "develop"
     app.kubernetes.io/managed-by: Helm
 data:
-  config.yaml: |-
 
   config.yaml: |
     # SPDX-License-Identifier: LicenseRef-CSSL-1.0
@@ -2019,11 +2018,6 @@ spec:
             - name: n2
               containerPort: 36412
               protocol: SCTP
-          env:
-            - name: TZ
-              value: "Europe/Paris"
-            - name: USE_ADDITIONAL_OPTIONS
-              value: "-E --rfsim --log_config.global_log_options level,nocolor,time"
         - name: tcpdump
           image: "docker.io/oaisoftwarealliance/oai-tcpdump-init:alpine-3.20"
           imagePullPolicy: IfNotPresent
