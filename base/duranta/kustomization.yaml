@@ -6,3 +6,6 @@ namespace: duranta
 resources:
   - rbac.yaml
   - oai-du.yaml
+
+patches:
+  - path: patches/oai-ran-rfsim.yaml
