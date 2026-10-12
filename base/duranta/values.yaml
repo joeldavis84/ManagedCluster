@@ -1,2 +1,33 @@
-global:
-  kubernetesDistribution: Openshift
+
+kubernetesDistribution: Openshift
+
+nfimage:
+  repository: docker.io/oaisoftwarealliance/oai-gnb
+  version: 2025.w50
+  pullPolicy: IfNotPresent
+
+config:
+  timeZone: "America/New_York"
+  useAdditionalOptions: "-E --rfsim --log_config.global_log_options level,nocolor,time"
+
+  duName: "duranta-du"
+  usrp: "rfsim"
+
+   ## Hub-side CU MetalLB VIP
+  cuHost: "192.168.27.57"
+
+  enableE2: false
+  f1duPort: 2153
+  gdbstack: 1
+  tac: 1
+
+  plmn_list:
+    - mcc: "001"
+      mnc: "01"
+      mnc_length: "2"
+      snssaiList:
+        - sst: "1"
+          sd: "0xffffff"
+
+multus:
+  enabled: false

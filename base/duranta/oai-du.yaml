@@ -1,0 +1,426 @@
+---
+# Source: oai-du/templates/serviceaccount.yaml
+# SPDX-License-Identifier: MIT
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oai-du
+  labels:
+    app: oai-du
+---
+# Source: oai-du/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oai-du-configmap
+  labels:
+    app: oai-du
+data:
+
+  config.yaml: |+
+    # SPDX-License-Identifier: LicenseRef-CSSL-1.0
+  
+    # Active DUs
+    Active_gNBs:
+    - du-rfsim
+    # Asn1_verbosity, choice in: none, info, annoying
+    Asn1_verbosity: "none"
+    gNBs:
+      - #////////// Identification parameters:
+        gNB_ID: 0xe00
+        gNB_DU_ID: 0xe00
+  
+        gNB_name: "du-rfsim"
+  
+        # Tracking area code, 0x0000 and 0xfffe are reserved values
+        tracking_area_code: 1
+        plmn_list:
+          - mcc: 208
+            mnc: 99
+            mnc_length: 2
+            snssaiList:
+              - sst: 1
+                sd: 0xffffff
+        nr_cellid: 12345678
+  
+        #////////// Physical parameters:
+        min_rxtxtime: 6
+  
+        servingCellConfigCommon:
+          #spCellConfigCommon
+          - physCellId: 0
+            #  downlinkConfigCommon
+            #frequencyInfoDL
+            # this is 3300.60 MHz + 53*12*30e-3 MHz = 3319.68
+            absoluteFrequencySSB: 621312
+            # this is 3300.60 MHz
+            dl_absoluteFrequencyPointA: 620040
+            #scs-SpecificCarrierList
+            dl_offstToCarrier: 0
+            # subcarrierSpacing
+            # 0=kHz15, 1=kHz30, 2=kHz60, 3=kHz120
+            dl_subcarrierSpacing: 1
+            dl_carrierBandwidth: 106
+            #initialDownlinkBWP
+            #genericParameters
+            # this is RBstart=0,L=106 (275*(L-1))+RBstart
+            initialDLBWPlocationAndBandwidth: 28875
+            # subcarrierSpacing
+            # 0=kHz15, 1=kHz30, 2=kHz60, 3=kHz120
+            initialDLBWPsubcarrierSpacing: 1
+            #pdcch-ConfigCommon
+            initialDLBWPcontrolResourceSetZero: 11
+            initialDLBWPsearchSpaceZero: 0
+            #uplinkConfigCommon
+            #frequencyInfoUL
+            ul_frequencyBand: 78
+            #scs-SpecificCarrierList
+            ul_offstToCarrier: 0
+            # subcarrierSpacing
+            # 0=kHz15, 1=kHz30, 2=kHz60, 3=kHz120
+            ul_subcarrierSpacing: 1
+            ul_carrierBandwidth: 106
+            pMax: 20
+            #initialUplinkBWP
+            #genericParameters
+            initialULBWPlocationAndBandwidth: 28875
+            # subcarrierSpacing
+            # 0=kHz15, 1=kHz30, 2=kHz60, 3=kHz120
+            initialULBWPsubcarrierSpacing: 1
+            #rach-ConfigCommon
+            #rach-ConfigGeneric
+            prach_ConfigurationIndex: 98
+            #prach_msg1_FDM
+            #0 = one, 1=two, 2=four, 3=eight
+            prach_msg1_FDM: 0
+            prach_msg1_FrequencyStart: 0
+            zeroCorrelationZoneConfig: 12
+            preambleReceivedTargetPower: -104
+            #preamblTransMax (0...10) = (3,4,5,6,7,8,10,20,50,100,200)
+            preambleTransMax: 6
+            #powerRampingStep
+            # 0=dB0,1=dB2,2=dB4,3=dB6
+            powerRampingStep: 1
+            #ssb_perRACH_OccasionAndCB_PreamblesPerSSB_PR
+            #1=oneeighth,2=onefourth,3=half,4=one,5=two,6=four,7=eight,8=sixteen
+            ssb_perRACH_OccasionAndCB_PreamblesPerSSB_PR: 4
+            #one (0..15) 4,8,12,16,...60,64
+            ssb_perRACH_OccasionAndCB_PreamblesPerSSB: 15
+            #ra_ContentionResolutionTimer
+            #(0..7) 8,16,24,32,40,48,56,64
+            ra_ContentionResolutionTimer: 7
+            rsrp_ThresholdSSB: 19
+            #prach-RootSequenceIndex_PR
+            #1 = 839, 2 = 139
+            prach_RootSequenceIndex_PR: 2
+            prach_RootSequenceIndex: 1
+            # SCS for msg1, can only be 15 for 30 kHz < 6 GHz, takes precendence over the one derived from prach-ConfigIndex
+            msg1_SubcarrierSpacing: 1
+            # restrictedSetConfig
+            # 0=unrestricted, 1=restricted type A, 2=restricted type B
+            restrictedSetConfig: 0
+            msg3_DeltaPreamble: 1
+            p0_NominalWithGrant: -90
+            # pucch-ConfigCommon setup :
+            # pucchGroupHopping
+            # 0 = neither, 1= group hopping, 2=sequence hopping
+            pucchGroupHopping: 0
+            hoppingId: 40
+            p0_nominal: -90
+            ssb_PositionsInBurst_Bitmap: 1
+            # ssb_periodicityServingCell
+            # 0 = ms5, 1=ms10, 2=ms20, 3=ms40, 4=ms80, 5=ms160, 6=spare2, 7=spare1
+            ssb_periodicityServingCell: 2
+            # dmrs_TypeA_position
+            # 0 = pos2, 1 = pos3
+            dmrs_TypeA_Position: 0
+            # subcarrierSpacing
+            # 0=kHz15, 1=kHz30, 2=kHz60, 3=kHz120
+            subcarrierSpacing: 1
+            #tdd-UL-DL-ConfigurationCommon
+            # subcarrierSpacing
+            # 0=kHz15, 1=kHz30, 2=kHz60, 3=kHz120
+            referenceSubcarrierSpacing: 1
+            # pattern1
+            # dl_UL_TransmissionPeriodicity
+            # 0=ms0p5, 1=ms0p625, 2=ms1, 3=ms1p25, 4=ms2, 5=ms2p5, 6=ms5, 7=ms10
+            dl_UL_TransmissionPeriodicity: 6
+            nrofDownlinkSlots: 7
+            nrofDownlinkSymbols: 6
+            nrofUplinkSlots: 2
+            nrofUplinkSymbols: 4
+            ssPBCH_BlockPower: -25
+  
+        # ------- SCTP definitions
+        SCTP:
+          # Number of streams to use in input/output
+          SCTP_INSTREAMS: 2
+          SCTP_OUTSTREAMS: 2
+  
+    MACRLCs:
+      - num_cc: 1
+        tr_s_preference: "local_L1"
+        tr_n_preference: "f1"
+        local_n_address: "192.168.71.171"
+        remote_n_address: "192.168.71.150"
+        local_n_portd: 2153
+        remote_n_portd: 2153
+        pusch_TargetSNRx10: 200
+        pucch_TargetSNRx10: 200
+  
+    L1s:
+      - num_cc: 1
+        tr_n_preference: "local_mac"
+        prach_dtx_threshold: 200
+        pucch0_dtx_threshold: 150
+        ofdm_offset_divisor: 8 # set this to UINT_MAX for offset 0
+  
+    RUs:
+      - local_rf: "yes"
+        nb_tx: 1
+        nb_rx: 1
+        att_tx: 0
+        att_rx: 0
+        bands: [78]
+        max_pdschReferenceSignalPower: -27
+        max_rxgain: 114
+        eNB_instances: [0]
+        clock_src: "internal"
+  
+    rfsimulator:
+      - serveraddr: server
+  
+    log_config:
+      global_log_level: "info"
+      hw_log_level: "info"
+      phy_log_level: "info"
+      mac_log_level: "info"
+      rlc_log_level: "info"
+      f1ap_log_level: "info"
+---
+# Source: oai-du/templates/rbac.yaml
+# SPDX-License-Identifier: MIT
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: oai-du-duranta-role
+  labels:
+    app: oai-du
+rules:
+- apiGroups:
+  - security.openshift.io
+  resourceNames:
+  - privileged
+  resources:
+  - securitycontextconstraints
+  verbs:
+  - use
+---
+# Source: oai-du/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: oai-du-duranta-binding
+  labels:
+    app: oai-du
+subjects:
+- kind: ServiceAccount
+  name: oai-du
+  namespace: duranta
+roleRef:
+  kind: Role
+  name: oai-du-duranta-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: oai-du/templates/service.yaml
+# SPDX-License-Identifier: MIT
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-ran
+  labels:
+    app: oai-du
+    helm.sh/chart: oai-du-2.4.0
+    app.kubernetes.io/name: oai-du
+    app.kubernetes.io/instance: oai-du
+    app.kubernetes.io/version: "develop"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: f1c
+      port: 38472
+      targetPort: 38472
+      protocol: SCTP
+    - name: f1u
+      port: 2153
+      targetPort: 2153
+      protocol: UDP
+  selector:
+    app.kubernetes.io/name: oai-du
+    app.kubernetes.io/instance: oai-du
+---
+# Source: oai-du/templates/deployment.yaml
+# SPDX-License-Identifier: MIT
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-du
+  labels:
+    app: oai-du
+    helm.sh/chart: oai-du-2.4.0
+    app.kubernetes.io/name: oai-du
+    app.kubernetes.io/instance: oai-du
+    app.kubernetes.io/version: "develop"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: oai-du
+      app.kubernetes.io/instance: oai-du
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: oai-du
+        app.kubernetes.io/instance: oai-du
+        app: oai-du
+    spec:
+      securityContext:
+        runAsGroup: 0
+        runAsUser: 0
+      serviceAccountName: oai-du
+      terminationGracePeriodSeconds: 5
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      initContainers:
+        - name: wait-for-cu
+          image: docker.io/oaisoftwarealliance/oai-tcpdump-init:alpine-3.20
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - until ncat -zv 192.168.27.57 38472 --sctp ; do echo waiting for cu or cucp to start; sleep 1; done
+          resources:
+            requests: { cpu: "1m", memory: "50Mi" }
+            limits:   { cpu: "1m", memory: "50Mi" }
+        - name: config-patcher
+          image: docker.io/mikefarah/yq:4.47.2
+          command: [ "sh", "-c" ]
+          args:
+            - |
+              set -e
+              echo "Resolving hostnames and patching config..."
+              cp /tmp/config/config.yaml /tmp/config_patch/gnb.yaml
+              for i in $(seq 1 $MAX_RETRIES); do
+                echo "$CU_HOST" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$' && { export CU_IP="$CU_HOST"; break; }
+                CU_IP=$(getent hosts "$CU_HOST" | awk '{print $1}')
+                if [ -n "$CU_IP" ]; then
+                  echo "Resolved CU_IP=$CU_IP"
+                  export CU_IP
+                  break
+                fi
+                echo "[$i/$MAX_RETRIES] Waiting for $CU_HOST to resolve..."
+                sleep $SLEEP_TIME
+              done
+
+              if [ -z "$CU_IP" ]; then
+                echo "ERROR: Unable to resolve $CU_HOST after $((MAX_RETRIES*SLEEP_TIME)) seconds"
+                exit 1
+              fi
+
+              export F1C_IP=$(ip -f inet addr show $F1C_IF_NAME | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*");
+              export F1U_IP=$(ip -f inet addr show $F1U_IF_NAME | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*");
+
+              yq -i '
+                .Active_gNBs[0] = strenv(DU_NAME) |
+                .gNBs[0].gNB_name = strenv(DU_NAME) |
+                .gNBs[0].tracking_area_code = strenv(TAC) |
+                .gNBs[0].plmn_list = strenv(PLMN_LIST) |
+                .gNBs[].plmn_list |= (from_yaml) |
+                del(.e2_agent) |
+                .MACRLCs[0].local_n_address = strenv(F1C_IP) |
+                .MACRLCs[0].local_n_address_f1u = strenv(F1U_IP) |
+                .MACRLCs[0].remote_n_address = strenv(CU_IP) 
+              ' /tmp/config_patch/gnb.yaml
+              cat /tmp/config_patch/gnb.yaml
+          env:
+            - name: DU_NAME
+              value: "duranta-du"
+            ## For resolving the hostname
+            - name: MAX_RETRIES
+              value: "10"
+            - name: SLEEP_TIME
+              value: "2"
+            - name: F1C_IF_NAME
+              value: 'eth0'
+            - name: F1U_IF_NAME
+              value: 'eth0'
+            - name: CU_HOST
+              value: "192.168.27.57"
+            - name: TAC
+              value: "1"
+            - name: PLMN_LIST
+              value: |
+              
+                - mcc: "001"
+                  mnc: "01"
+                  mnc_length: "2"
+                  snssaiList:
+                  - sd: "0xffffff"
+                    sst: "1"
+          volumeMounts:
+            - name: shared-data
+              mountPath: /tmp/config_patch
+            - name: configuration
+              mountPath: /tmp/config
+          resources:
+            requests: { cpu: "1m", memory: "50Mi" }
+            limits:   { cpu: "1m", memory: "50Mi" }
+      containers:
+        - name: du
+          image: "docker.io/oaisoftwarealliance/oai-gnb:2025.w50"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+              - SYS_NICE
+              drop:
+              - ALL
+          volumeMounts:
+            - name: shared-data
+              mountPath: /opt/oai-gnb/etc
+          env:
+          - name: TZ
+            value: America/New_York
+          - name: USE_ADDITIONAL_OPTIONS
+            value: -E --rfsim --log_config.global_log_options level,nocolor,time
+          - name: OAI_GDBSTACKS
+            value: "1"
+          ports:
+          - containerPort: 38472
+            name: f1c
+            protocol: SCTP
+          - containerPort: 2153
+            name: f1u
+            protocol: UDP
+
+      volumes:
+        - name: configuration
+          configMap:
+            name: oai-du-configmap
+        - name: shared-data
+          emptyDir: {}
+---
+# Source: oai-du/templates/configmap.yaml
+# SPDX-License-Identifier: MIT
+---
+# Source: oai-du/templates/nad.yaml
+# SPDX-License-Identifier: MIT
