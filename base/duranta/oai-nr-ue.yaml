@@ -1,0 +1,144 @@
+---
+# Source: oai-nr-ue/templates/serviceaccount.yaml
+# SPDX-License-Identifier: MIT
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: oai-nr-ue
+---
+# Source: oai-nr-ue/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oai-nr-ue-configmap
+data:
+  nr-ue.conf: |
+    uicc0 = {
+      imsi = "001010000000100";
+      key = "fec86ba6eb707ed08905757b1bb44b8f";
+      opc = "C42449363BBAD02B66D16BC975D77CC1";
+
+      pdu_sessions = (
+        {
+          dnn = "oai";
+          nssai_sst = 1;
+          nssai_sd = "16777215";
+          type = "IPv4";
+        }
+      );
+    }
+---
+# Source: oai-nr-ue/templates/rbac.yaml
+# SPDX-License-Identifier: MIT
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: oai-nr-ue-duranta-role
+  labels:
+    app: oai-nr-ue
+rules:
+- apiGroups:
+  - security.openshift.io
+  resourceNames:
+  - privileged
+  resources:
+  - securitycontextconstraints
+  verbs:
+  - use
+---
+# Source: oai-nr-ue/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: oai-nr-ue-duranta-binding
+  labels:
+    app: oai-nr-ue
+subjects:
+- kind: ServiceAccount
+  name: oai-nr-ue
+  namespace: duranta
+roleRef:
+  kind: Role
+  name: oai-nr-ue-duranta-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: oai-nr-ue/templates/deployment.yaml
+# SPDX-License-Identifier: MIT
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-nr-ue
+  labels:
+    helm.sh/chart: oai-nr-ue-2.4.0
+    app.kubernetes.io/name: oai-nr-ue
+    app.kubernetes.io/instance: oai-nr-ue
+    app.kubernetes.io/version: "develop"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: oai-nr-ue
+      app.kubernetes.io/instance: oai-nr-ue
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: oai-nr-ue
+        app.kubernetes.io/instance: oai-nr-ue
+        app: oai-nr-ue
+    spec:
+      securityContext:
+        runAsGroup: 0
+        runAsUser: 0
+      containers:
+      - name: nr-ue
+        image: "docker.io/oaisoftwarealliance/oai-nr-ue:2025.w50"
+        imagePullPolicy: IfNotPresent
+        securityContext:
+            capabilities:
+              add:
+              - NET_ADMIN
+              - NET_RAW
+              - SYS_NICE
+              - IPC_LOCK
+              drop:
+              - ALL
+            privileged: true
+        volumeMounts:
+          - mountPath: /opt/oai-nr-ue/etc
+            name: configuration
+          - name: dev-net-tun
+            mountPath: /dev/net/tun
+          # USRP B210/B200 Mini
+        command: [ "/bin/bash", "-c" ]
+        args:
+          - RFSIM_IP_ADDRESS=$(getent hosts $RFSIM_HOST | awk '{print $1}');
+            RFSIM_IP_ADDRESS=$(if [[ $RFSIM_IP_ADDRESS ]]; then echo $RFSIM_IP_ADDRESS; else echo $RFSIM_HOST;fi);
+              exec /opt/oai-nr-ue/bin/nr-uesoftmodem -O /opt/oai-nr-ue/etc/nr-ue.conf $USE_ADDITIONAL_OPTIONS --rfsimulator.serveraddr $RFSIM_IP_ADDRESS;
+        env:
+          - name: TZ
+            value: "America/New_York"
+          - name: USE_ADDITIONAL_OPTIONS
+            value: "-E --rfsim -r 106 --numerology 1 -C 3319680000 --log_config.global_log_options level,nocolor,time"
+          - name: RFSIM_HOST
+            value: oai-ran
+          - name: OAI_GDBSTACKS
+            value: "1"
+      volumes:
+      - configMap:
+          name: oai-nr-ue-configmap
+        name: configuration
+      - name: dev-net-tun
+        hostPath:
+          path: /dev/net/tun
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      serviceAccountName: oai-nr-ue
+      terminationGracePeriodSeconds: 5
+---
+# Source: oai-nr-ue/templates/configmap.yaml
+# SPDX-License-Identifier: LicenseRef-CSSL-1.0

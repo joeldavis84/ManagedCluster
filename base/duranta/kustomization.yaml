@@ -4,8 +4,9 @@ kind: Kustomization
 namespace: duranta
 
 resources:
-  - rbac.yaml
-  - oai-du.yaml
+- rbac.yaml
+- oai-du.yaml
+- oai-nr-ue.yaml
 
 patches:
   - path: patches/oai-ran-rfsim.yaml

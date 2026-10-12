@@ -1,33 +1,23 @@
-
 kubernetesDistribution: Openshift
 
 nfimage:
-  repository: docker.io/oaisoftwarealliance/oai-gnb
+  repository: docker.io/oaisoftwarealliance/oai-nr-ue
   version: 2025.w50
   pullPolicy: IfNotPresent
 
 config:
   timeZone: "America/New_York"
-  useAdditionalOptions: "-E --rfsim --rfsimulator.serveraddr server --log_config.global_log_options level,nocolor,time"
-
-  duName: "duranta-du"
-  usrp: "rfsim"
-
-   ## Hub-side CU MetalLB VIP
-  cuHost: "192.168.27.57"
-
-  enableE2: false
-  f1duPort: 2153
+  rfSimServer: "oai-ran"
   gdbstack: 1
-  tac: 1
+  radio: "rfsim"
+  useAdditionalOptions: "-E --rfsim -r 106 --numerology 1 -C 3319680000 --log_config.global_log_options level,nocolor,time"
 
-  plmn_list:
-    - mcc: "001"
-      mnc: "01"
-      mnc_length: "2"
-      snssaiList:
-        - sst: "1"
-          sd: "0xffffff"
+  imsi: "001010000000100"
+  key: "fec86ba6eb707ed08905757b1bb44b8f"
+  opc: "C42449363BBAD02B66D16BC975D77CC1"
 
-multus:
-  enabled: false
+  pdu_sessions:
+    - dnn: "oai"
+      sst: 1
+      sd: "16777215"
+      type: "IPv4"
