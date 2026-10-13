@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-du
+spec:
+  template:
+    spec:
+      containers:
+        - name: du
+          env:
+            - name: GNB_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: duranta-radio-identity
+                  key: gnb-id
+
+            - name: GNB_DU_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: duranta-radio-identity
+                  key: gnb-du-id
+
+            - name: NR_CELL_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: duranta-radio-identity
+                  key: nr-cell-id
+
+            - name: PCI
+              valueFrom:
+                configMapKeyRef:
+                  name: duranta-radio-identity
+                  key: pci

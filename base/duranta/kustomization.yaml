@@ -9,4 +9,5 @@ resources:
 - oai-nr-ue.yaml
 
 patches:
-  - path: patches/oai-ran-rfsim.yaml
+- path: patches/oai-ran-rfsim.yaml
+- path: patches/radio-identity.yaml
