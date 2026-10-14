@@ -13,13 +13,8 @@ data:
       pdu_sessions = (
         {
           id = 1;
-          dnn = "oai";
-          nssai_sst = 1;
-          nssai_sd = "16777215";
-        },
-        {
-          id = 2;
           dnn = "ims";
+          type = "IPv4v6";
           nssai_sst = 1;
           nssai_sd = 0x000001;
         }
