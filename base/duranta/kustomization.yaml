@@ -11,3 +11,4 @@ resources:
 patches:
 - path: patches/oai-ran-rfsim.yaml
 - path: patches/radio-identity.yaml
+- path: patches/ims-pdu-session.yaml
