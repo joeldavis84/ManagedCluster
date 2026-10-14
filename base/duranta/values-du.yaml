@@ -1,9 +1,17 @@
 
 kubernetesDistribution: Openshift
 
+oai-du:
+  image:
+    tag: "2026.w05"
+
+oai-nr-ue:
+  image:
+    tag: "2026.w05"
+
 nfimage:
   repository: docker.io/oaisoftwarealliance/oai-gnb
-  version: 2025.w50
+  version: 2026.w05
   pullPolicy: IfNotPresent
 
 config:
