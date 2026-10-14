@@ -36,7 +36,7 @@ spec:
               value: >-
                 -E
                 --rfsim
-                --rfsimulator.serveraddr server
+                --rfsimulator.[0].serveraddr server
                 --log_config.global_log_options level,nocolor,time
                 --gNBs.[0].gNB_ID $(GNB_ID)
                 --gNBs.[0].gNB_DU_ID $(GNB_DU_ID)

@@ -401,7 +401,7 @@ spec:
           - name: TZ
             value: America/New_York
           - name: USE_ADDITIONAL_OPTIONS
-            value: -E --rfsim --rfsimulator.serveraddr server --log_config.global_log_options level,nocolor,time
+            value: -E --rfsim --rfsimulator.[0].serveraddr server --log_config.global_log_options level,nocolor,time
           - name: OAI_GDBSTACKS
             value: "1"
           ports:
