@@ -25,6 +25,13 @@ data:
           nssai_sst = 1;
           nssai_sd = "16777215";
           type = "IPv4";
+        },
+        {
+          id = 2;
+          dnn = "ims";
+          nssai_sst = 1;
+          nssai_sd = "16777215";
+          type = "IPv4";
         }
       );
     }
