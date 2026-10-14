@@ -25,13 +25,6 @@ data:
           nssai_sst = 1;
           nssai_sd = "16777215";
           type = "IPv4";
-        },
-        {
-          id = 2;
-          dnn = "ims";
-          nssai_sst = 1;
-          nssai_sd = "16777215";
-          type = "IPv4";
         }
       );
     }
@@ -103,7 +96,7 @@ spec:
         runAsUser: 0
       containers:
       - name: nr-ue
-        image: "docker.io/oaisoftwarealliance/oai-nr-ue:2025.w50"
+        image: "docker.io/oaisoftwarealliance/oai-nr-ue:2026.w05"
         imagePullPolicy: IfNotPresent
         securityContext:
             capabilities:

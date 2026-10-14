@@ -2,7 +2,7 @@ kubernetesDistribution: Openshift
 
 nfimage:
   repository: docker.io/oaisoftwarealliance/oai-nr-ue
-  version: 2025.w50
+  version: 2026.w05
   pullPolicy: IfNotPresent
 
 config:
