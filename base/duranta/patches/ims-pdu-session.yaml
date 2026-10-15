@@ -21,7 +21,7 @@ data:
         {
           id = 2;
           dnn = "ims";
-          type = "IPv4v6";
+          type = "IPv4";
           nssai_sst = 1;
           nssai_sd = 0xffffff;
         }
