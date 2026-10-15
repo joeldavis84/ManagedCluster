@@ -163,7 +163,7 @@ data:
         tr_s_preference: "local_L1"
         tr_n_preference: "f1"
         local_n_address: "192.168.71.171"
-        remote_n_address: "192.168.71.150"
+        remote_n_address: "192.168.27.57"
         local_n_portd: 2153
         remote_n_portd: 2153
         pusch_TargetSNRx10: 200
