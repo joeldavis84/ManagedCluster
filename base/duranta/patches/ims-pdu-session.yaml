@@ -23,7 +23,7 @@ data:
           dnn = "ims";
           type = "IPv4v6";
           nssai_sst = 1;
-          nssai_sd = 0x000001;
+          nssai_sd = 0xffffff;
         }
       );
 
