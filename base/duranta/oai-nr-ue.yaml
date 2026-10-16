@@ -102,7 +102,7 @@ spec:
         runAsUser: 0
       containers:
       - name: nr-ue
-        image: "docker.io/oaisoftwarealliance/oai-nr-ue:2026.w05"
+        image: "docker.io/oaisoftwarealliance/oai-nr-ue:2026.w39"
         imagePullPolicy: IfNotPresent
         securityContext:
             capabilities:
