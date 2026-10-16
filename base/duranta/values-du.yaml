@@ -21,8 +21,8 @@ config:
   duName: "duranta-du"
   usrp: "rfsim"
 
-   ## Hub-side CU MetalLB VIP
-  cuHost: "192.168.27.57"
+   ## Hub-side CU 
+  cuHost: "192.168.27.58"
 
   enableE2: false
   f1duPort: 2153

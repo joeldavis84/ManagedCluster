@@ -163,7 +163,7 @@ data:
         tr_s_preference: "local_L1"
         tr_n_preference: "f1"
         local_n_address: "192.168.71.171"
-        remote_n_address: "192.168.27.57"
+        remote_n_address: "192.168.71.150"
         local_n_portd: 2153
         remote_n_portd: 2153
         pusch_TargetSNRx10: 200
@@ -307,7 +307,7 @@ spec:
           command:
             - /bin/sh
             - -c
-            - until ncat -zv 192.168.27.57 38472 --sctp ; do echo waiting for cu or cucp to start; sleep 1; done
+            - until ncat -zv 192.168.27.58 38472 --sctp ; do echo waiting for cu or cucp to start; sleep 1; done
           resources:
             requests: { cpu: "1m", memory: "50Mi" }
             limits:   { cpu: "1m", memory: "50Mi" }
@@ -364,7 +364,7 @@ spec:
             - name: F1U_IF_NAME
               value: 'eth0'
             - name: CU_HOST
-              value: "192.168.27.57"
+              value: "192.168.27.58"
             - name: TAC
               value: "1"
             - name: PLMN_LIST
@@ -386,7 +386,7 @@ spec:
             limits:   { cpu: "1m", memory: "50Mi" }
       containers:
         - name: du
-          image: "docker.io/oaisoftwarealliance/oai-gnb:2026.w05"
+          image: "docker.io/oaisoftwarealliance/oai-gnb:2026.w39"
           imagePullPolicy: IfNotPresent
           securityContext:
             capabilities:
