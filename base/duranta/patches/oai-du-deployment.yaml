@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-du
+spec:
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: duranta-baremetal
+    spec:
+      initContainers:
+      - name: config-patcher
+        env:
+        - name: F1C_IF_NAME
+          value: net1
+        - name: F1U_IF_NAME
+          value: net1
+        - name: CU_HOST
+          value: "192.168.27.58"
