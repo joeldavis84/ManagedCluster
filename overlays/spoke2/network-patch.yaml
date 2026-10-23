@@ -1,0 +1,26 @@
+---
+apiVersion: operator.openshift.io/v1
+kind: Network
+metadata:
+  name: cluster
+spec:
+  additionalNetworks:
+    - name: duranta-baremetal
+      namespace: duranta
+      type: Raw
+      rawCNIConfig: |-
+        {
+          "cniVersion": "0.3.1",
+          "name": "duranta-baremetal",
+          "type": "macvlan",
+          "master": "enp8s0",
+          "mode": "bridge",
+          "ipam": {
+            "type": "static",
+            "addresses": [
+              {
+                "address": "192.168.27.61/25"
+              }
+            ]
+          }
+        }
