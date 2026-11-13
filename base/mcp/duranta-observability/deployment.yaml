@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-mcp
+  namespace: duranta-observability
+  labels:
+    app.kubernetes.io/name: prometheus-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-mcp
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: prometheus-mcp
+    spec:
+      serviceAccountName: prometheus-mcp
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: duranta-prompt-gateway
+          # Build/push gateway/Containerfile before syncing. Change image if necessary.
+          image: quay.io/jodavis/duranta-prometheus-mcp-gateway:v0.1.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DURANTA_MCP_CONFIG
+              value: /etc/duranta-mcp/config.toml
+            - name: PROMETHEUS_MCP_UPSTREAM_URL
+              value: http://127.0.0.1:8081/mcp
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          volumeMounts:
+            - name: prompt-config
+              mountPath: /etc/duranta-mcp
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: '1'
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+        - name: upstream-prometheus-mcp
+          image: quay.io/prometheus/prometheus-mcp:v0.19.0-rc.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - --mcp.transport=http
+            - --mcp.tools=core
+            - --prometheus.backend=thanos
+            - --prometheus.url=https://thanos-querier.openshift-monitoring.svc:9091
+            - --http.config=/etc/prometheus-mcp/http/http-config.yaml
+            - --web.listen-address=0.0.0.0:8081
+            - --prometheus.timeout=30s
+            - --prometheus.truncation-limit=300
+            - --no-docs.auto-update
+          ports:
+            - name: upstream
+              containerPort: 8081
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: upstream
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: upstream
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: '1'
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+          volumeMounts:
+            - name: http-config
+              mountPath: /etc/prometheus-mcp/http
+              readOnly: true
+            - name: service-ca
+              mountPath: /etc/prometheus-mcp/service-ca
+              readOnly: true
+            - name: serviceaccount-token
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
+      volumes:
+        - name: prompt-config
+          configMap:
+            name: prometheus-mcp-config
+            defaultMode: 0444
+        - name: serviceaccount-token
+          projected:
+            defaultMode: 0444
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+        - name: http-config
+          configMap:
+            name: prometheus-mcp-http
+            defaultMode: 0444
+        - name: service-ca
+          configMap:
+            name: prometheus-mcp-service-ca
+            items:
+              - key: service-ca.crt
+                path: service-ca.crt
+            defaultMode: 0444

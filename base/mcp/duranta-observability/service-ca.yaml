@@ -1,0 +1,10 @@
+# OpenShift injects service-ca.crt into this ConfigMap.
+# Never combine it with application configuration; the operator owns its data.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-mcp-service-ca
+  namespace: duranta-observability
+  annotations:
+    service.beta.openshift.io/inject-cabundle: 'true'
+    argocd.argoproj.io/sync-options: ServerSideApply=true

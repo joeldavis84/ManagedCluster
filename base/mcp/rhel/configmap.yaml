@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linux-mcp-server
+  namespace: demo-rhel-mcp
+data:
+  LINUX_MCP_TRANSPORT: "http"
+  LINUX_MCP_HOST: "0.0.0.0"
+  LINUX_MCP_PORT: "8000"
+  LINUX_MCP_PATH: "/mcp"
+
+  LINUX_MCP_HOST_MODE: "remote-only"
+  LINUX_MCP_USER: "core"
+  LINUX_MCP_SSH_KEY_PATH: "/var/lib/mcp/.ssh/id_rsa"
+  LINUX_MCP_KNOWN_HOSTS_PATH: "/var/lib/mcp/.ssh/known_hosts"
+  LINUX_MCP_VERIFY_HOST_KEYS: "true"
+
+  LINUX_MCP_POLICY_PATH: "/etc/linux-mcp/policy.yaml"
+  LINUX_MCP_TOOLSET: "fixed"
+
+  LINUX_MCP_LOG_OUTPUT: "stdout"
+  LINUX_MCP_LOG_FORMAT: "json"
+  LINUX_MCP_LOG_LEVEL: "INFO"

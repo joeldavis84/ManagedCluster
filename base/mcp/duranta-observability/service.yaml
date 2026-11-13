@@ -1,0 +1,17 @@
+# Cluster-local only. Do not expose to public traffic without MCP authentication.
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-mcp
+  namespace: duranta-observability
+  labels:
+    app.kubernetes.io/name: prometheus-mcp
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: prometheus-mcp
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

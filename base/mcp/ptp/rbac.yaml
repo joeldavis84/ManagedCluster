@@ -1,0 +1,63 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ptp-mcp-server
+  name: ptp-mcp-reader
+  namespace: openshift-ptp
+rules:
+- apiGroups:
+  - ptp.openshift.io
+  resources:
+  - ptpconfigs
+  - ptpoperatorconfigs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/log
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ptp-mcp-server
+  name: ptp-mcp-reader-binding
+  namespace: openshift-ptp
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ptp-mcp-reader
+subjects:
+- kind: ServiceAccount
+  name: ptp-mcp-server
+  namespace: openshift-ptp

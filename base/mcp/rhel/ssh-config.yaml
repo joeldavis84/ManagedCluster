@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linux-mcp-ssh-config
+  namespace: demo-rhel-mcp
+data:
+  config: |
+    Host master1
+      HostName master1.dkypuros.demo
+      User core
+      IdentityFile /var/lib/mcp/.ssh/id_rsa
+      StrictHostKeyChecking no
+      UserKnownHostsFile /dev/null
+
+    Host master2
+      HostName master2.dkypuros.demo
+      User core
+      IdentityFile /var/lib/mcp/.ssh/id_rsa
+      StrictHostKeyChecking no
+      UserKnownHostsFile /dev/null
+
+    Host master3
+      HostName master3.dkypuros.demo
+      User core
+      IdentityFile /var/lib/mcp/.ssh/id_rsa
+      StrictHostKeyChecking no
+      UserKnownHostsFile /dev/null
+
+    Host spoke1
+      HostName spoke1.spokes.ptnr1.cert4.bos2.lab
+      User core
+      IdentityFile /var/lib/mcp/.ssh/id_rsa
+      StrictHostKeyChecking no
+      UserKnownHostsFile /dev/null
+
+    Host spoke2
+      HostName spoke2.spokes.ptnr1.cert4.bos2.lab
+      User core
+      IdentityFile /var/lib/mcp/.ssh/id_rsa
+      StrictHostKeyChecking no
+      UserKnownHostsFile /dev/null

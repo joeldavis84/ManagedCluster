@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ptp-mcp-server
+    app.kubernetes.io/name: ptp-mcp-server
+  name: ptp-mcp-server
+  namespace: openshift-ptp
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: ptp-mcp-server
+  type: ClusterIP

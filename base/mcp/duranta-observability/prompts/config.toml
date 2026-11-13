@@ -1,0 +1,114 @@
+# Loaded by the lightweight Duranta prompt gateway, not by upstream prometheus-mcp.
+# MCP clients receive server_instructions on initialize and these entries via prompts/list.
+server_instructions = """
+This MCP server specializes in Duranta 5G application telemetry using the local
+OpenShift Thanos/Prometheus query backend. Prefer Kamailio / IMS signaling,
+SIP REGISTER and MESSAGE traffic, 2xx/4xx/5xx response patterns, and especially
+SIP 408 timeouts and delivery latency. Next investigate 5GC (AMF, SMF, UPF,
+PFCP, N2/N4 sessions), then OAI CU/DU/UE and RRC/F1 connectivity where this
+cluster exposes relevant metrics.
+
+Always start with metric_metadata, label_names, label_values, or narrow PromQL
+metric-name discovery when exporter names are unknown. Do not invent metrics,
+assume all Kamailio counters are enabled, or mistake container traffic for SIP
+message volume. Distinguish counters from gauges and use rate/increase only on
+counters. Report whether results are absent, zero, stale, or inaccessible.
+
+This deployment queries THIS cluster's local Thanos Querier only. On the hub,
+prioritize Kamailio / SIP and CU/5GC; on a DU/UE spoke prioritize OAI DU/UE
+and F1/RRC measurements. Do not assume hub sees spoke data. The dedicated
+Kubernetes MCP server handles pods, deployment state, logs and restarts;
+the dedicated PTP MCP server handles synchronization/clock offset. Only
+recommend those tools when correlating an application symptom. Never perform
+administrative or mutating operations; use read-only Prometheus queries.
+"""
+
+[[prompts]]
+name = "duranta-discover-app-metrics"
+title = "Discover Duranta 5G Metrics"
+description = "Find actually scraped Kamailio, SIP, 5GC, and radio metrics in this cluster."
+[[prompts.messages]]
+role = "user"
+content = """
+Using metric_metadata, label_names, series and query, discover exported
+Kamailio/SIP/IMS counters first, then AMF/SMF/UPF/PFCP, then OAI/F1/RRC/NAS.
+Use narrow name matchers such as __name__=~"(?i:.*(kamailio|sip|ims).*)".
+Determine exporter job, namespace, labels, and whether time series are current.
+Distinguish absent exporters from present targets with zero activity. Report
+real series names and recommended next PromQL; do not invent exporter names.
+"""
+
+[[prompts]]
+name = "duranta-sip-register"
+title = "Inspect SIP Registration"
+description = "Examine Kamailio SIP REGISTER attempts, response outcomes, and failures."
+[[prompts.messages]]
+role = "user"
+content = """
+Investigate SIP REGISTER signaling in Kamailio for Duranta. Discover real
+metrics first; when present, calculate 5m and 1h registration request rates,
+200 responses, 401 authentication challenge rates where available, and
+4xx/5xx failures. Separate normal digest challenges from registration failures.
+Mention whether the exported metrics cover all routes or only local proxies.
+If no method-specific metrics exist, report the instrumentation gap.
+"""
+
+[[prompts]]
+name = "duranta-sip-message-delivery"
+title = "Inspect SIP MESSAGE Delivery"
+description = "Measure SIP MESSAGE volume, success ratio, and latency when exported."
+[[prompts.messages]]
+role = "user"
+content = """
+Investigate Kamailio SIP MESSAGE traffic associated with Duranta user messaging.
+Discover available METHOD=MESSAGE counters and status-code labels before
+constructing PromQL. Estimate 5m message rate, 200/202 success counts, failure
+rate, retransmission indicators, and any actual end-to-end latency histogram.
+Do not interpret generic TCP bytes or SIP transaction duration as application
+HTTP 200 completion without evidence. Explain missing measurement points.
+"""
+
+[[prompts]]
+name = "duranta-sip-408"
+title = "Investigate SIP 408 Timeouts"
+description = "Correlate SIP 408 spikes with message delivery and 5GC session telemetry."
+[[prompts.messages]]
+role = "user"
+content = """
+Find Kamailio SIP 408 counters or status-code-labeled SIP response series.
+Calculate 5m and 30m rates and the share of 408 relative to responses, only
+using verified matching counters. Look for MESSAGE/REGISTER and relevant peer
+labels if exposed. Inspect PFCP/PDU or UPF telemetry only if needed to explain
+signaling failures. Recommend the separate Kubernetes MCP for pod restarts and
+the separate PTP MCP only for a plausible timing-related cause.
+"""
+
+[[prompts]]
+name = "duranta-5gc-pdu-sessions"
+title = "Inspect 5GC Sessions"
+description = "Investigate AMF/SMF/UPF and PDU session activation or failures."
+[[prompts.messages]]
+role = "user"
+content = """
+Discover AMF/SMF/UPF counters or gauges, PFCP association/heartbeat metrics,
+PDU session requests, activation success/failure, and GTP-U traffic where
+exposed. Prefer real series, 5m rates and current gauges. Do not assume
+vendor-specific 5GC exporters exist. Separate network session observations
+from SIP registration or application messaging outcomes.
+"""
+
+[[prompts]]
+name = "duranta-radio-signaling"
+title = "Inspect DU/UE Radio Signaling"
+description = "Inspect OAI DU/UE RRC and F1 application metrics, if exported."
+[[prompts.messages]]
+role = "user"
+content = """
+Discover current OAI DU/UE F1AP, RRC, UE attachment, gNB, and cell metrics
+without inventing series names. On a spoke, prioritize DU/UE evidence; on hub,
+prioritize CU-side F1 and RRC visibility. Report observed connection/session
+trends and relevant event counts only where Prometheus exporters exist.
+Do not infer effective PCI/cell ID, RRC connection state or radio timing from
+application pod presence. Hand off node/pod checks to Kubernetes MCP and
+PTP offset checks to PTP MCP.
+"""

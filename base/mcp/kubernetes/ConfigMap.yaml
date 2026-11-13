@@ -1,0 +1,165 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubernetes-mcp-config
+  namespace: demo-kubernetes-mcp
+data:
+  config.toml: |
+    port = "8080"
+    metrics_port = "9090"
+    bind_address = "0.0.0.0"
+
+    cluster_provider_strategy = "in-cluster"
+    read_only = true
+    stateless = true
+    toolsets = ["core"]
+    list_output = "yaml"
+
+    enabled_tools = [
+      "api_resources_list",
+      "resources_list",
+      "resources_get",
+      "namespaces_list",
+      "events_list",
+      "pods_list_in_namespace",
+      "pods_get",
+      "pods_log",
+    ]
+
+    server_instructions = """
+    This server provides read-only, in-cluster access to Kubernetes and
+    OpenShift objects relevant to telecommunications infrastructure.
+    Discover installed API kinds and versions instead of assuming that
+    every O-Cloud or OpenShift operator is present.
+
+    Focus areas:
+    - Metal3: BareMetalHost and HardwareData (metal3.io)
+    - O-Cloud Manager, when installed: Location, OCloudSite, and
+      ResourcePool (ocloud.openshift.io)
+    - O2-IMS integration: local Kubernetes provisioning resources,
+      cluster status, and operator workloads when RBAC permits
+    - Timing: PtpConfig and NodePtpDevice (ptp.openshift.io)
+    - Networking: SR-IOV, Multus, and NMState custom resources
+    - Node performance: PerformanceProfile, MachineConfig, and nodes
+
+    Use api_resources_list for API discovery when available; otherwise
+    obtain installed resource versions from the operator documentation
+    or the cluster administrator. Use resources_list and resources_get
+    for Kubernetes custom resources. Report RBAC denials explicitly.
+    Contrast spec (desired configuration) with status (observed state).
+
+    O2-IMS inventory and alarms exposed via the O-RAN REST API are not
+    automatically available through Kubernetes MCP tools. Do not treat
+    Kubernetes object status as proof of an O2 API response.
+    """
+
+    [[denied_resources]]
+    group = ""
+    version = "v1"
+    kind = "Secret"
+
+    [tool_overrides.resources_list]
+    description = """
+    List Kubernetes resources by apiVersion and kind, with optional
+    namespace and labelSelector. Useful for Metal3 BareMetalHost,
+    O-Cloud Location/OCloudSite/ResourcePool, PtpConfig, SR-IOV,
+    and PerformanceProfile resources where installed and authorized.
+    """
+
+    [tool_overrides.resources_get]
+    description = """
+    Get one Kubernetes resource by apiVersion, kind, name and optional
+    namespace. Compare spec and status, and check relationships through
+    labels, owners and resource references. Do not read Secrets.
+    """
+
+    [[prompts]]
+    name = "inspect-baremetal-hosts"
+    title = "Inspect Bare Metal Infrastructure"
+    description = "Review Metal3 BareMetalHost provisioning and hardware status."
+
+    [[prompts.messages]]
+    role = "user"
+    content = """
+    Use resources_list to find BareMetalHost objects in metal3.io and,
+    where available, related HardwareData objects. Identify host name,
+    namespace, provisioning state, operational state, hardware inventory,
+    and errors. Distinguish missing information from healthy status.
+    Do not read BMC credentials or Secrets.
+    """
+
+    [[prompts]]
+    name = "inspect-ptp-config"
+    title = "Inspect PTP Configuration"
+    description = "Review configured PTP interfaces, profiles and node assignments."
+
+    [[prompts.messages]]
+    role = "user"
+    content = """
+    Inspect PtpConfig and NodePtpDevice resources, if installed and
+    authorized, starting with the openshift-ptp namespace. Summarize
+    configured PTP profiles, interfaces and selected nodes. Do not claim
+    actual clock lock or offset from Kubernetes configuration alone;
+    measurements require daemon diagnostics or a PTP-specific MCP server.
+    """
+
+    [[prompts]]
+    name = "inspect-ocloud-inventory"
+    title = "Inspect O-Cloud Infrastructure"
+    description = "Map O-Cloud sites and resource pools to Metal3 bare-metal hosts."
+
+    [[prompts.messages]]
+    role = "user"
+    content = """
+    Inspect the O-Cloud inventory represented by Kubernetes custom
+    resources in THIS cluster only. First discover whether the
+    ocloud.openshift.io API group is installed, and find its served
+    versions. If present, use resources_list and resources_get to review:
+    - Location objects
+    - OCloudSite objects, especially spec.globalLocationName
+    - ResourcePool objects, especially spec.oCloudSiteName
+    - BareMetalHost objects in metal3.io, including the
+      resources.clcm.openshift.io/resourcePoolName label
+    - HardwareData inventory, where available
+
+    Prefer the oran-o2ims namespace for hierarchy objects if it exists;
+    do not assume the BareMetalHosts are in that same namespace.
+    Reconstruct Location -> OCloudSite -> ResourcePool -> BareMetalHost
+    relationships. Identify dangling references, unlabeled hosts,
+    provisioning errors, missing hardware data, and pools without hosts.
+    Report what cannot be verified because of absent CRDs or RBAC.
+    Do not retrieve Secrets or infer live capacity from configuration.
+    """
+
+    [[prompts]]
+    name = "inspect-o2ims"
+    title = "Inspect O2-IMS Integration"
+    description = "Review Kubernetes-visible O-RAN O2-IMS components and provisioning."
+
+    [[prompts.messages]]
+    role = "user"
+    content = """
+    Assess the local Kubernetes resources supporting O-RAN O2-IMS.
+    This is a read-only inspection of THIS cluster, not a direct call
+    to the O2-IMS REST API.
+
+    1. Discover whether the O-Cloud Manager and related CRDs are present,
+       including ocloud.openshift.io Location, OCloudSite and ResourcePool.
+    2. Inspect the hierarchy, Metal3 BareMetalHosts and their pool labels.
+    3. Discover ProvisioningRequest, ClusterTemplate, ClusterInstance,
+       NodeAllocationRequest and ManagedCluster APIs. Inspect only kinds
+       actually installed and allowed by RBAC. Summarize status,
+       conditions, related resources and any stuck provisioning steps.
+    4. If RBAC permits, inspect O2-IMS controller pods and recent events
+       in the discovered operator namespace (often oran-o2ims), and
+       report warnings, restarts and errors.
+    5. Separate Kubernetes-observed state from O2-IMS API inventory,
+       resource types, deployment managers, alarms, and subscriptions.
+       Those API results require a separately configured O2-IMS client.
+
+    Report resource names and namespaces, observed conditions, missing
+    API groups, RBAC restrictions, and clear next diagnostic actions.
+    Do not invent API responses, query Secrets, or change resources.
+    """
+

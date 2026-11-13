@@ -1,0 +1,195 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubernetes-mcp-metal3-reader
+rules:
+
+   ## Kubernetes node inventory
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## O-Cloud Object Inspection
+  - apiGroups:
+      - ocloud.openshift.io
+    resources:
+      - locations
+      - ocloudsites
+      - resourcepools
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## Metal3 bare-metal provisioning and firmware
+  - apiGroups:
+      - metal3.io
+    resources:
+      - baremetalhosts
+      - hardwaredata
+      - firmwareschemas
+      - hostfirmwaresettings
+      - hostfirmwarecomponents
+      - hostupdatepolicies
+      - preprovisioningimages
+      - bmceventsubscriptions
+      - provisionings
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## Precision Time Protocol
+  - apiGroups:
+      - ptp.openshift.io
+    resources:
+      - ptpconfigs
+      - nodeptpdevices
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## SR-IOV networking
+  - apiGroups:
+      - sriovnetwork.openshift.io
+    resources:
+      - sriovnetworknodepolicies
+      - sriovnetworknodestates
+      - sriovnetworks
+      - sriovibnetworks
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## Multus secondary network attachments
+  - apiGroups:
+      - k8s.cni.cncf.io
+    resources:
+      - network-attachment-definitions
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## NMState node networking
+  - apiGroups:
+      - nmstate.io
+    resources:
+      - nodenetworkstates
+      - nodenetworkconfigurationpolicies
+      - nodenetworkconfigurationenactments
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## OpenShift networking configuration
+  - apiGroups:
+      - operator.openshift.io
+    resources:
+      - networks
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## CPU isolation, hugepages, and real-time tuning
+  - apiGroups:
+      - performance.openshift.io
+    resources:
+      - performanceprofiles
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## Node tuning configuration and applied profiles
+  - apiGroups:
+      - tuned.openshift.io
+    resources:
+      - tuneds
+      - profiles
+    verbs:
+      - get
+      - list
+      - watch
+
+   ## MachineConfig and kubelet configuration
+  - apiGroups:
+      - machineconfiguration.openshift.io
+    resources:
+      - machineconfigs
+      - machineconfigpools
+      - kubeletconfigs
+      - containerruntimeconfigs
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-mcp-metal3-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubernetes-mcp-metal3-reader
+subjects:
+  - kind: ServiceAccount
+    name: kubernetes-mcp-server
+    namespace: demo-kubernetes-mcp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubernetes-mcp-machine-api-reader
+  namespace: openshift-machine-api
+rules:
+  - apiGroups:
+      - machine.openshift.io
+    resources:
+      - machines
+      - machinesets
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/log
+      - events
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - events.k8s.io
+    resources:
+      - events
+    verbs:
+      - get
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kubernetes-mcp-machine-api-reader
+  namespace: openshift-machine-api
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kubernetes-mcp-machine-api-reader
+subjects:
+  - kind: ServiceAccount
+    name: kubernetes-mcp-server
+    namespace: demo-kubernetes-mcp

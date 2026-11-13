@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linux-mcp-server
+  namespace: demo-rhel-mcp
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: linux-mcp-server
+  template:
+    metadata:
+      labels:
+        app: linux-mcp-server
+    spec:
+      serviceAccountName: linux-mcp-server
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+
+      containers:
+        - name: linux-mcp-server
+          image: quay.io/redhat-services-prod/rhel-lightspeed-tenant/linux-mcp-server:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+          - name: LINUX_MCP_VERIFY_HOST_KEYS
+            value: "false"
+          envFrom:
+            - configMapRef:
+                name: linux-mcp-server
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          volumeMounts:
+            - name: ssh
+              mountPath: /var/lib/mcp/.ssh
+              readOnly: true
+            - name: policy
+              mountPath: /etc/linux-mcp
+              readOnly: true
+            - name: home
+              mountPath: /var/lib/mcp/.local
+
+      volumes:
+        - name: ssh
+          projected:
+            defaultMode: 0400
+            sources:
+              - secret:
+                  name: rhel-mcp-ssh
+                  items:
+                    - key: id_rsa
+                      path: id_rsa
+              - configMap:
+                  name: linux-mcp-ssh-config
+                  items:
+                    - key: config
+                      path: config
+
+        - name: policy
+          configMap:
+            name: linux-mcp-auth-policy
+
+        - name: home
+          emptyDir: {}

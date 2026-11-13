@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linux-mcp-host-discovery
+  namespace: demo-rhel-mcp
+data:
+  hosts.py: |
+    from pathlib import Path
+    from linux_mcp_server.server import main, mcp
+
+    SSH_CONFIG = Path("/var/lib/mcp/.ssh/config")
+
+    @mcp.resource(
+      "ssh://configured-hosts",
+      name="Configured SSH Hosts",
+      description="SSH host aliases available to this MCP server",
+      mime_type="text/plain",
+      tags={"fixed"},
+    )
+    def configured_hosts() -> str:
+      hosts = set()
+
+      for line in SSH_CONFIG.read_text().splitlines():
+        fields = line.strip().split()
+
+        if not fields or fields[0].lower() != "host":
+          continue
+
+        for alias in fields[1:]:
+          if not any(char in alias for char in "*?!"):
+            hosts.add(alias)
+
+      return "\n".join(sorted(hosts))
+
+    if __name__ == "__main__":
+      main()
+

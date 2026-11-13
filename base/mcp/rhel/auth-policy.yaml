@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: linux-mcp-auth-policy
+  namespace: demo-rhel-mcp
+data:
+  policy.yaml: |
+    rules:
+      - host: "master1"
+        tools: ["*"]
+        action: ssh_default
+        all_users: true
+
+      - host: "master2"
+        tools: ["*"]
+        action: ssh_default
+        all_users: true
+
+      - host: "master3"
+        tools: ["*"]
+        action: ssh_default
+        all_users: true
+
+      - host: "spoke1"
+        tools: ["*"]
+        action: ssh_default
+        all_users: true
+
+      - host: "spoke2"
+        tools: ["*"]
+        action: ssh_default
+        all_users: true
+

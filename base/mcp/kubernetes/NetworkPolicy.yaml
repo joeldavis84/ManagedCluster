@@ -1,0 +1,23 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kubernetes-mcp-server-ingress
+  namespace: demo-kubernetes-mcp
+spec:
+  podSelector:
+    matchLabels:
+      app: kubernetes-mcp-server
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: demo-kubernetes-mcp
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: demo-rhel-mcp
+      ports:
+        - port: 8080
+          protocol: TCP
