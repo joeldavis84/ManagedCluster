@@ -25,7 +25,7 @@ requiredDropCapabilities:
   - ALL
 volumes:
   - configMap
+  - downwardAPI
   - emptyDir
   - projected
   - secret
-  - downwardAPI
