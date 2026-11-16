@@ -5,3 +5,4 @@ resources:
 - sctp.yaml
 - network.yaml
 - duranta
+- mcp
