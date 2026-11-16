@@ -11,3 +11,4 @@ resources:
 - auth-policy.yaml
 - deployment.yaml
 - service.yaml
+- ssh-identity.yaml
