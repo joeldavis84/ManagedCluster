@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-ptp
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
+  labels:
+    name: openshift-ptp
+    openshift.io/cluster-monitoring: "true"

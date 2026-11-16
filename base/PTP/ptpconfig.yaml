@@ -1,0 +1,33 @@
+---
+apiVersion: ptp.openshift.io/v1
+kind: PtpConfig
+metadata:
+  name: ordinary-clock
+  namespace: openshift-ptp
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  profile:
+    - name: ordinary-clock
+      interface: ens1f1
+      ptp4lOpts: "-2 -s"
+      phc2sysOpts: "-a -r -n 0"
+      ptpSchedulingPolicy: SCHED_FIFO
+      ptpSchedulingPriority: 10
+      ptpSettings:
+        logReduce: "false"
+      ptp4lConf: |
+        [global]
+        domainNumber 0
+        tx_timestamp_timeout 100
+        network_transport L2
+        delay_mechanism E2E
+        time_stamping hardware
+        slaveOnly 1
+
+  recommend:
+    - profile: ordinary-clock
+      priority: 0
+      match:
+        - nodeLabel: node-role.kubernetes.io/master

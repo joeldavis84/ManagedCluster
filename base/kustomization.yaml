@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - sctp.yaml
+- PTP
 - network.yaml
 - duranta
 - mcp
