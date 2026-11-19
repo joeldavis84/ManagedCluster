@@ -1,0 +1,23 @@
+---
+apiVersion: performance.openshift.io/v2
+kind: PerformanceProfile
+metadata:
+  name: duranta
+spec:
+  cpu:
+    reserved: "0-5"
+    isolated: "6-9"
+    balanceIsolated: true
+  realTimeKernel:
+    enabled: false
+  workloadHints:
+    realTime: false
+    highPowerConsumption: false
+    perPodPowerManagement: false
+  nodeSelector:
+    node-role.kubernetes.io/duranta: ""
+  machineConfigLabel:
+    machineconfiguration.openshift.io/role: master
+  machineConfigPoolSelector:
+    pools.operator.machineconfiguration.openshift.io/master: ""
+
