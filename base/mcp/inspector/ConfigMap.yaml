@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-inspector-config
+  namespace: mcp-inspector
+data:
+  mcp.json: |
+    {
+      "mcpServers": {
+        "example-server": {
+          "type": "http",
+          "url": "https://example-server.modelcontextprotocol.io/mcp"
+        }
+      }
+    }

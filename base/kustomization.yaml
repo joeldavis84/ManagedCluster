@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
 - OCP
+- Logging
 - sctp.yaml
 - PTP
 - network.yaml
