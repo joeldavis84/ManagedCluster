@@ -6,3 +6,4 @@ resources:
 - OperatorGroup.yaml
 - Subscription.yaml
 - rbac.yaml
+- Loki

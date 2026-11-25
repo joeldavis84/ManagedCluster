@@ -1,0 +1,47 @@
+---
+apiVersion: observability.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    description: >-
+      Forwards Duranta application logs to the centralized
+      LokiStack on the O-Cloud hub.
+spec:
+  serviceAccount:
+    name: logging-collector
+  inputs:
+    - name: duranta-logs
+      type: application
+      application:
+        includes:
+          - namespace: duranta
+  outputs:
+    - name: hub-loki
+      type: loki
+      loki:
+        url: https://logging-loki-openshift-logging.apps.dkypuros.demo/api/logs/v1/application
+        authentication:
+          token:
+            from: secret
+            secret:
+              name: hub-loki-credentials
+              key: token
+        labelKeys:
+          - log_type
+          - kubernetes.namespace_name
+          - kubernetes.container_name
+          - kubernetes.pod_name
+          - kubernetes.host
+      tls:
+        ca:
+          configMapName: hub-loki-ca
+          key: ca.crt
+  pipelines:
+    - name: duranta-to-hub
+      inputRefs:
+        - duranta-logs
+      outputRefs:
+        - hub-loki
